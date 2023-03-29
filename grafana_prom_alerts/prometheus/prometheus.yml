@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: node-exporter-localhost
+    static_configs:
+            - targets: ['192.168.5.155:9100','192.168.5.155:9117']
+
+        #  - job_name: node-exporter-Germany
+        #    scheme: https
+        #    basic_auth:
+        #      username: prometheus
+        #      password: $2y$10$Yyhmb.sHoWKhb.luptkbhe7QTHUTWp0W9VzQ3rNXP24cKyfNh26l6
+        #    tls_config:
+        #      ca_file: node_exporterGermany.crt
+        #      insecure_skip_verify: true
+        #    static_configs:
+        #      - targets: ['87.251.77.14:443']
+        #
+rule_files:
+  - 'alert.rules'
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "alertmanager:9093"

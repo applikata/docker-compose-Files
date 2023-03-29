@@ -1,0 +1,41 @@
+groups:
+- name: PromExporterMissing
+  rules:
+  - alert: PrometheusExporterMissing
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Прометеус! Возможно хост не доступен! = (instance {{ $labels.instance }})"
+      description: "Экспортер не отвечает более минуты! Проверьте работоспособность хоста = VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: HostHighCpuLoad
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 80
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host high CPU load (instance {{ $labels.instance }})
+      description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+
+
+  - alert: HostOutOfMemory
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host out of memory (instance {{ $labels.instance }})
+      description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+
+  - alert: RAM_HostOutOfMemory
+    expr: 100 * (1 - ((avg_over_time(node_memory_MemFree_bytes[10m]) + avg_over_time(node_memory_Cached_bytes[10m]) + avg_over_time(node_memory_Buffers_bytes[10m])) / avg_over_time(node_memory_MemTotal_bytes[10m]))) > 90
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host out RAM memory (instance {{ $labels.instance }})
+      description: "Node RAM memory is filling up (< 90% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
